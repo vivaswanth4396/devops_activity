@@ -7,3 +7,7 @@ core DevOps principles including Git, CI/CD pipelines, and automation.
 ## Goal
 The goal is to recreate a lost codebase with a clean structure,
 proper version control, and production-quality practices.
+
+
+## Status
+Initial repository setup completed.
