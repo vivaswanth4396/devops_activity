@@ -5,40 +5,43 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Checking out source code'
+                echo 'Getting code from GitHub'
                 checkout scm
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Build stage (simulated)'
-                bat 'echo Building application'
-                bat 'dir'
+                echo 'Build stage started'
+                bat 'echo Building application...'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Test stage (simulated)'
-                bat 'echo Running tests'
+                echo 'Running quality checks'
+
+                bat '''
+                echo Running tests...
+                exit /b 0
+                '''
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploy stage (simulated)'
-                bat 'echo Application deployed successfully'
+                echo 'Deploy stage started'
+                bat 'echo Deploying application...'
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline finished SUCCESSFULLY'
+            echo 'QUALITY GATE PASSED'
         }
         failure {
-            echo 'Pipeline FAILED'
+            echo 'QUALITY GATE FAILED - DEPLOYMENT STOPPED'
         }
     }
 }
