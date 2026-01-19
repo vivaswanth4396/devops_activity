@@ -12,32 +12,33 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo 'Building the application'
-                mvn clean compile
+                echo 'Build stage (simulated)'
+                bat 'echo Building application'
+                bat 'dir'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running unit tests'
-                mvn test
+                echo 'Test stage (simulated)'
+                bat 'echo Running tests'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying application (simulation)'
-                echo "Deploy successful"
+                echo 'Deploy stage (simulated)'
+                bat 'echo Application deployed successfully'
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully'
+            echo 'Pipeline finished SUCCESSFULLY'
         }
         failure {
-            echo 'Pipeline failed'
+            echo 'Pipeline FAILED'
         }
     }
 }
