@@ -5,42 +5,34 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Fetching source code'
+                echo 'Fetching source code from GitHub'
                 checkout scm
             }
         }
 
-        stage('Prepare Backup') {
+        stage('Health Check') {
             steps {
-                echo 'Preparing backup before deployment'
-                bat 'if exist C:\\phoenix_app\\deploy.txt copy C:\\phoenix_app\\deploy.txt C:\\phoenix_app\\deploy_backup.txt'
+                echo 'Checking application health'
+                bat 'echo HEALTH=OK > C:\\phoenix_app\\health.txt'
             }
         }
 
-        stage('Deploy New Version') {
+        stage('Monitoring') {
             steps {
-                echo 'Deploying new version'
-                bat 'echo Deploying version 2 > C:\\phoenix_app\\deploy.txt'
-            }
-        }
-
-        stage('Verify Deployment') {
-            steps {
-                echo 'Verifying deployment'
-                bat 'exit /b 0'
+                echo 'Monitoring application status'
+                bat 'type C:\\phoenix_app\\health.txt'
             }
         }
     }
 
     post {
-        failure {
-            echo 'Deployment failed - starting rollback'
-            bat 'if exist C:\\phoenix_app\\deploy_backup.txt copy C:\\phoenix_app\\deploy_backup.txt C:\\phoenix_app\\deploy.txt'
-            echo 'Rollback completed'
+        success {
+            echo 'APPLICATION HEALTHY'
         }
 
-        success {
-            echo 'Deployment successful - no rollback needed'
+        failure {
+            echo 'ALERT: APPLICATION DOWN'
+            bat 'echo ALERT TRIGGERED > C:\\phoenix_app\\alert.txt'
         }
     }
 }
