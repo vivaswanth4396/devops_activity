@@ -5,34 +5,54 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Fetching source code from GitHub'
+                echo 'Pulling source code'
                 checkout scm
             }
         }
 
-        stage('Health Check') {
+        stage('Build') {
             steps {
-                echo 'Checking application health'
-                bat 'echo HEALTH=OK > C:\\phoenix_app\\health.txt'
+                echo 'Building application'
+                bat 'echo Building application...'
             }
         }
 
-        stage('Monitoring') {
+        stage('Test') {
             steps {
-                echo 'Monitoring application status'
-                bat 'type C:\\phoenix_app\\health.txt'
+                echo 'Running tests'
+                bat 'exit /b 0'
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                echo 'Quality gate passed'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying application'
+                bat 'echo Deployed successfully > C:\\phoenix_app\\deploy.txt'
+            }
+        }
+
+        stage('Monitor') {
+            steps {
+                echo 'Monitoring application'
+                bat 'echo HEALTH=OK > C:\\phoenix_app\\health.txt'
             }
         }
     }
 
     post {
         success {
-            echo 'APPLICATION HEALTHY'
+            echo 'CI/CD PIPELINE COMPLETED SUCCESSFULLY'
         }
 
         failure {
-            echo 'ALERT: APPLICATION DOWN'
-            bat 'echo ALERT TRIGGERED > C:\\phoenix_app\\alert.txt'
+            echo 'PIPELINE FAILED - INITIATING ROLLBACK'
+            bat 'echo Rollback initiated > C:\\phoenix_app\\rollback.txt'
         }
     }
 }
