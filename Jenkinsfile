@@ -5,43 +5,51 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Getting code from GitHub'
+                echo 'Fetching code'
                 checkout scm
             }
         }
 
-        stage('Build') {
+        stage('Provision Infrastructure') {
             steps {
-                echo 'Build stage started'
-                bat 'echo Building application...'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                echo 'Running quality checks'
+                echo 'Provisioning infrastructure (Ansible simulation)'
 
                 bat '''
-                echo Running tests...
-                exit /b 0
+                echo Creating application directories...
+                if not exist C:\\phoenix_app mkdir C:\\phoenix_app
+                if not exist C:\\phoenix_logs mkdir C:\\phoenix_logs
                 '''
             }
         }
 
-        stage('Deploy') {
+        stage('Configure Environment') {
             steps {
-                echo 'Deploy stage started'
-                bat 'echo Deploying application...'
+                echo 'Configuring environment'
+
+                bat '''
+                echo APP_ENV=production > C:\\phoenix_app\\env.txt
+                echo LOG_PATH=C:\\phoenix_logs >> C:\\phoenix_app\\env.txt
+                '''
+            }
+        }
+
+        stage('Deploy Application') {
+            steps {
+                echo 'Deploying application'
+
+                bat '''
+                echo Application deployed successfully > C:\\phoenix_app\\deploy.txt
+                '''
             }
         }
     }
 
     post {
         success {
-            echo 'QUALITY GATE PASSED'
+            echo 'INFRASTRUCTURE AUTOMATION COMPLETED'
         }
         failure {
-            echo 'QUALITY GATE FAILED - DEPLOYMENT STOPPED'
+            echo 'INFRASTRUCTURE AUTOMATION FAILED'
         }
     }
 }
