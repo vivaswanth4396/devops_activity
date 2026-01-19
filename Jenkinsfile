@@ -5,30 +5,40 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Fetching code'
+                echo 'Fetching source code'
                 checkout scm
             }
         }
 
-        stage('Provision Infrastructure') {
+        stage('Ensure Directories') {
             steps {
-                echo 'Provisioning infrastructure (Ansible simulation)'
+                echo 'Ensuring required directories exist'
 
                 bat '''
-                echo Creating application directories...
                 if not exist C:\\phoenix_app mkdir C:\\phoenix_app
                 if not exist C:\\phoenix_logs mkdir C:\\phoenix_logs
                 '''
             }
         }
 
-        stage('Configure Environment') {
+        stage('Ensure Configuration') {
             steps {
-                echo 'Configuring environment'
+                echo 'Ensuring configuration file state'
 
                 bat '''
-                echo APP_ENV=production > C:\\phoenix_app\\env.txt
-                echo LOG_PATH=C:\\phoenix_logs >> C:\\phoenix_app\\env.txt
+                echo APP_NAME=PhoenixApp > C:\\phoenix_app\\config.txt
+                echo ENV=production >> C:\\phoenix_app\\config.txt
+                echo LOG_PATH=C:\\phoenix_logs >> C:\\phoenix_app\\config.txt
+                '''
+            }
+        }
+
+        stage('Verify Configuration') {
+            steps {
+                echo 'Verifying configuration state'
+
+                bat '''
+                type C:\\phoenix_app\\config.txt
                 '''
             }
         }
@@ -38,7 +48,7 @@ pipeline {
                 echo 'Deploying application'
 
                 bat '''
-                echo Application deployed successfully > C:\\phoenix_app\\deploy.txt
+                echo Deployment done successfully > C:\\phoenix_app\\deploy.txt
                 '''
             }
         }
@@ -46,10 +56,10 @@ pipeline {
 
     post {
         success {
-            echo 'INFRASTRUCTURE AUTOMATION COMPLETED'
+            echo 'CONFIGURATION MANAGEMENT COMPLETED'
         }
         failure {
-            echo 'INFRASTRUCTURE AUTOMATION FAILED'
+            echo 'CONFIGURATION MANAGEMENT FAILED'
         }
     }
 }
