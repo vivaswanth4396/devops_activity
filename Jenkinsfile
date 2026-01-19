@@ -10,56 +10,21 @@ pipeline {
             }
         }
 
-        stage('Ensure Directories') {
+        stage('Prepare Backup') {
             steps {
-                echo 'Ensuring required directories exist'
+                echo 'Preparing backup before deployment'
 
                 bat '''
-                if not exist C:\\phoenix_app mkdir C:\\phoenix_app
-                if not exist C:\\phoenix_logs mkdir C:\\phoenix_logs
+                if exist C:\\phoenix_app\\deploy.txt (
+                    copy C:\\phoenix_app\\deploy.txt C:\\phoenix_app\\deploy_backup.txt
+                )
                 '''
             }
         }
 
-        stage('Ensure Configuration') {
+        stage('Deploy New Version') {
             steps {
-                echo 'Ensuring configuration file state'
+                echo 'Deploying new version'
 
                 bat '''
-                echo APP_NAME=PhoenixApp > C:\\phoenix_app\\config.txt
-                echo ENV=production >> C:\\phoenix_app\\config.txt
-                echo LOG_PATH=C:\\phoenix_logs >> C:\\phoenix_app\\config.txt
-                '''
-            }
-        }
-
-        stage('Verify Configuration') {
-            steps {
-                echo 'Verifying configuration state'
-
-                bat '''
-                type C:\\phoenix_app\\config.txt
-                '''
-            }
-        }
-
-        stage('Deploy Application') {
-            steps {
-                echo 'Deploying application'
-
-                bat '''
-                echo Deployment done successfully > C:\\phoenix_app\\deploy.txt
-                '''
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'CONFIGURATION MANAGEMENT COMPLETED'
-        }
-        failure {
-            echo 'CONFIGURATION MANAGEMENT FAILED'
-        }
-    }
-}
+                echo Deploying version 2 > C:\\phoenix
